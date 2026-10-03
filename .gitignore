@@ -1,0 +1,8 @@
+# Входящие материалы
+incoming/
+
+# Временные файлы Word
+~$*.docx
+
+# Личные настройки Claude
+.claude/settings.local.json
