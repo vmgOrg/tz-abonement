@@ -6,3 +6,8 @@ incoming/
 
 # Личные настройки Claude
 .claude/settings.local.json
+
+# Локальные файлы, не для репозитория: личные заметки для Claude, переменные окружения, любые *.local.*
+CLAUDE.local.md
+.env*
+*.local.*
