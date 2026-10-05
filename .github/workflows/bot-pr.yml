@@ -1,0 +1,56 @@
+name: Лист изменений
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  change-sheet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Собрать лист изменений
+        run: |
+          set -euo pipefail
+          {
+            printf '# Лист изменений\n\n'
+            printf 'Файл собирается автоматически, вручную не править.\n\n'
+            printf '| Запрос | Дата слияния | Заголовок |\n'
+            printf '|---|---|---|\n'
+            gh pr list --state merged --base main --limit 1000 \
+              --json number,mergedAt,title |
+              jq -r 'sort_by(.mergedAt)[]
+                | "| #\(.number) | \(.mergedAt[0:10]) | \(.title | gsub("[\r\n]+"; " ") | gsub("[|]"; "/")) |"'
+          } > notes/change-sheet.md
+      - name: Отправить запрос на слияние, если файл изменился
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain -- notes/change-sheet.md)" ]; then
+            echo "Лист изменений не изменился, запрос не нужен."
+            exit 0
+          fi
+          branch="bot/change-sheet-${GITHUB_RUN_NUMBER}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          gh auth setup-git
+          git switch -c "$branch"
+          git add notes/change-sheet.md
+          git commit -m "Лист изменений: обновление по слитым запросам"
+          git push origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "Лист изменений: обновление" \
+            --body "Лист изменений собран автоматически из слитых запросов (запуск ${GITHUB_RUN_NUMBER}). Вручную не править."
