@@ -1,0 +1,13 @@
+# Общая зона: ведущий аналитик и обе команды аналитиков
+* @GrigoryevV @vmgOrg/func-analysts @vmgOrg/sec-analysts
+
+# Раздел 4.2 — зона Анны и команды func-analysts
+/tz/04-2-functions.md @vmgOrg/func-analysts @GrigoryevV
+
+# Разделы 4.1, 4.3 и 4.4 — зона Бориса и команды sec-analysts
+/tz/04-1-structure.md @vmgOrg/sec-analysts @GrigoryevV
+/tz/04-3-support.md @vmgOrg/sec-analysts @GrigoryevV
+/tz/04-4-general-tech.md @vmgOrg/sec-analysts @GrigoryevV
+
+# Правила и шаблоны репозитория — правки одобряет только ведущий аналитик
+/.github/ @GrigoryevV
